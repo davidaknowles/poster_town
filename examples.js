@@ -26,9 +26,7 @@ let imgUploadTest = async() => {
 // Note that upload will fail if size of file is 5Mb or more.
 let batchImgUploadTest = async() => {
     let myFilesNameDict = {
-        0: "data/exampleImages/myImg0.png",
-        1: "data/exampleImages/myImg1.jpg",
-        2: "data/exampleImages/myImg2.png",
+        0: "background.png",
     };
     let posterAddressesFname = "data/exampleImages/allAddresses.json";
     let imgAddresses = {};
@@ -77,7 +75,7 @@ let buildPosterSession = async (withPosterList) => {
         }
         let fullPosterRoomName = townCoordinates + ": " + posterRoomName;
         let initPosterRoom = iTown in posterTownsUrls ? posterTownsUrls[iTown].url : null;
-        let newPosterRoom = await posterUtils.writeMap('posterRoom' + townCoordinates,  postersJson, fullPosterRoomName, initPosterRoom);
+        let newPosterRoom = await posterUtils.writeMap('ml4fg_posters' + townCoordinates,  postersJson, fullPosterRoomName, initPosterRoom);
         posterTownsUrls[iTown] = {
             url: newPosterRoom,
             coordinates: townCoordinates,
@@ -100,7 +98,7 @@ let buildPosterSession = async (withPosterList) => {
     }
     gtUtils.writeJson(posterTownsUrls, posterTownUrlFname);
     gtUtils.writeJson(postersJsonAllTowns, CFG.POSTER_JSON_FILLED_FNAME);
-    await hypermapUtils.connectAllRooms(newHyperRoomSpaceMap, allPosterRooms);
+    // await hypermapUtils.connectAllRooms(newHyperRoomSpaceMap, allPosterRooms);
     if (withPosterList) addAllPosterLists(posterTownsUrls, true);
 }
 

@@ -178,6 +178,57 @@ exports.textImageURL = async function(text, assetFontsize, totalWidth, color, hi
 };
 
 
+exports.textImageURLWrap = async function(text, assetFontsize, width, color){
+    let myColor = color == null ? "white" : color;
+    let height = 100;
+    let canvas = createCanvas(width, height);
+    let ctx = canvas.getContext('2d');
+
+    // Font
+    let txtFont = 'bold ' + assetFontsize + 'pt Helvetica'
+    ctx.font = txtFont;
+
+    let textWidthGauge = ctx.measureText("Text").width;
+
+    var y=0;
+    var words = text.split(' ');
+    var line = '';
+    var lineHeight=assetFontsize*1.286; // a good approx for 10-18px sizes
+
+    //ctx.canvas.height = textWidthGauge;
+    ctx.font = txtFont;
+    ctx.textAlign = 'left'
+    ctx.textBaseline = 'top'
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = myColor;
+
+    for(var n = 0; n < words.length; n++) {
+        var testLine = line + words[n] + ' ';
+        var metrics = ctx.measureText(testLine);
+        var testWidth = metrics.width;
+        if(testWidth > width) {
+          ctx.fillText(line, 0, y);
+          if(n<words.length){
+              line = words[n] + ' ';
+              y += lineHeight;
+          }
+        }
+        else {
+          line = testLine;
+        }
+      }
+    ctx.fillText(line, 0, y);
+    let buffer = canvas.toBuffer('image/png')
+
+    // API version uploads to Gather Town.
+    let res = {
+        url: await exports.uploadBytes(buffer),
+        width: parseInt(1 + ctx.canvas.width/32),
+    }
+    return res
+};
+
+
 // MAP FUNCTIONS
 // Pulls map object for a given space id and map id.
 exports.pullMap = async (spaceId, map_id) => {
@@ -458,6 +509,21 @@ exports.textObject = async(x, y, text, fontSize, textColor, urlObjOpt) => {
     let color = textColor == null ? "black" : textColor;
     let myFontSize = fontSize == null ? 20 : fontSize;
     let urlObj = urlObjOpt == null ? await exports.textImageURL(text, myFontSize, -1, color) : urlObjOpt;
+    let newObj = {
+        normal: urlObj.url,
+        width: urlObj.width,
+        height: 1,
+        type: 0,
+        x: x,
+        y: y,
+    };
+    return newObj;
+};
+
+exports.textObjectWrap = async(x, y, text, fontSize, textColor, width) => {
+    let color = textColor == null ? "black" : textColor;
+    let myFontSize = fontSize == null ? 20 : fontSize;
+    let urlObj = await exports.textImageURLWrap(text, myFontSize, width, color);
     let newObj = {
         normal: urlObj.url,
         width: urlObj.width,

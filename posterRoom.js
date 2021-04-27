@@ -4,7 +4,7 @@ const gtUtils = require("./gtUtils.js");
 const CFG = require("./config.json");
 const MAP_ID = "custom-entrance";
 const WIDTH = 94;
-const HEIGHT = 57;
+const HEIGHT = 72;
 const zoomZoneImg =
 	"https://cdn.gather.town/v0/b/gather-town.appspot.com/o/assets%2Fb2c9fbf1-4fc1-4b59-9ef1-e3de6b69981f?alt=media&token=cb74684a-3c6e-4260-b51c-c917e078124d";
 const zoomZoneImgActive =
@@ -13,6 +13,8 @@ const mapImg =
 "https://cdn.gather.town/v0/b/gather-town.appspot.com/o/assets%2Ff34f6bf2-3bf9-4d95-9fe5-280e5da132a0?alt=media&token=9bc3f3c3-b691-4688-b633-2b0082e3f014";
 const mapImgActive =
 "https://cdn.gather.town/v0/b/gather-town.appspot.com/o/assets%2Fbd842123-b038-4cf9-8e73-0fe335d56f0f?alt=media&token=86879c6d-2625-4379-8f23-6af0b22487d7";
+const tvImgActive = 'https://cdn.gather.town/v0/b/gather-town.appspot.com/o/internal-dashboard-upload%2FgN5StbSj9RfNmo2I?alt=media&token=0e1b3a55-2872-49ec-afff-6dc84299c634';
+const tvImg = 'https://cdn.gather.town/v0/b/gather-town.appspot.com/o/internal-dashboard-upload%2F557Fr9GkjuU9Kt9X?alt=media&token=28212036-d1fb-4cb6-aeeb-6e897eb82822';
 // Spawns
 const spawnInspo = gtUtils.readJson("jsonFiles/spawnsExample.json");
 
@@ -32,48 +34,36 @@ exports.getSpawnLink = function(iPoster, townUrl) {
 let posterObject = async (posterJson) => {
     let index = posterJson.index;
     let posterImg = posterJson.posterImgUrl;
+    let posterVideo = posterJson.posterVideo;
     // If using a lower-res preview, update posterJson and line below
     let posterImgPreview = posterJson.posterImgUrl;
     const topleft = {
-        x: parseInt(index / 4) * 13 + 3,
-        y: (index % 4) * 13 + 4,
+        x: parseInt(index / 5) * 13 + 3,
+        y: (index % 5) * 13 + 4,
     };
     let newPoster = {
         x: topleft.x,
-        y: topleft.y,
-        type: 2,
+        y: topleft.y + 2,
+        type: 3,
         distThreshold: 1,
-        width: 10,
-        height: 8,
-        normal: mapImg,
-        highlighted: mapImgActive,
+        width: 1,
+        height: 1,
+        _name: 'TV',
+        templateId: 'TV - QO5fvVLt_M4HcK3P8Zkmh',
+        normal: tvImg,
+        highlighted: tvImgActive,
         properties: {
-            image: posterImg,
-            preview: posterImgPreview,
+            video : posterVideo,
+            // image: posterImg,
+            // preview: posterImgPreview,
         },
     };
     // TODO: do this a single time? or comment to note this can be done only once.
     // This labels posterboards with a letter + number coordinate -- substitute newLabel with other text if desired
-    let newLabel = gtUtils.getLabels(index, 4);
-    let xLabel = topleft.x + 3.3;
-    let yLabel = topleft.y + 2.7;
-    let labelObject = await gtUtils.textObject(xLabel, yLabel, newLabel, 20, "black");
+    let lab =posterJson.name + " (" + posterJson.authors + ")";
+    let labelObject = await gtUtils.textObjectWrap(topleft.x, topleft.y, lab, 12, "white", 350);
+    //let authorObject = await gtUtils.textObject(topleft.x, topleft.y+1, , 12, "white");
 
-    // Adding zoom area
-    let zoomObject = {
-        x: topleft.x,
-        y: topleft.y + 8,
-        type: 4,
-        width: 10,
-        height: 2,
-        distThreshold: 0,
-        previewMessage: "press x for Zoom",
-        properties: {
-            zoomLink: posterJson.zoom,
-        },
-        normal: zoomZoneImg,
-        highlighted: zoomZoneImgActive,
-    };
     let privateSpaces = [];
     for (let x = topleft.x; x < topleft.x + 10; x++) {
         for (let y = topleft.y; y < topleft.y + 8; y++) {
@@ -81,14 +71,14 @@ let posterObject = async (posterJson) => {
         }
     }
     // zoom private space
-    for (let x = topleft.x; x < topleft.x + 10; x++) {
-        for (let y = topleft.y + 8; y < topleft.y + 10; y++) {
-            privateSpaces.push({ x, y, spaceId: "z" + index });
-        }
-    }
+    //for (let x = topleft.x; x < topleft.x + 10; x++) {
+    //    for (let y = topleft.y + 8; y < topleft.y + 10; y++) {
+    //        privateSpaces.push({ x, y, spaceId: "z" + index });
+    //    }
+    //}
 
     let mapPoster = {
-        objects: [newPoster, labelObject, zoomObject],
+        objects: [newPoster, labelObject],
         privateSpaces: privateSpaces,
     };
     return mapPoster;
@@ -101,8 +91,8 @@ let posterObject = async (posterJson) => {
 exports.writeMap = async (roomUrlBase, postersJson, posterRoomName, roomShortUrl) => {
     let base_map = {
         id: MAP_ID,
-        backgroundImagePath:
-        "https://cdn.gather.town/v0/b/gather-town.appspot.com/o/maps%2F8225d335-2e81-4264-a94f-5be4e31b5f63?alt=media&token=0d6c2671-1a65-4e2d-83f5-46da93acb82b",
+        backgroundImagePath: "https://cdn.gather.town/storage.googleapis.com/gather-town.appspot.com/uploads/YVX1bgwFZi1ulwu3/pOl1L3ZWWajAckh1BS2WMm",
+        // "https://cdn.gather.town/v0/b/gather-town.appspot.com/o/maps%2F8225d335-2e81-4264-a94f-5be4e31b5f63?alt=media&token=0d6c2671-1a65-4e2d-83f5-46da93acb82b",
         dimensions: [WIDTH, HEIGHT],
         // generally, adding many more than one is good practice so people don't all stack up in the same place
         spawns: spawnInspo,
@@ -141,17 +131,17 @@ exports.writeMap = async (roomUrlBase, postersJson, posterRoomName, roomShortUrl
 
     // Optional floor markers:
     // Name of room, tutorial video, poster list
-    let posterRoomNameUrlObj = await gtUtils.textImageURL(posterRoomName, 36, -1, "teal");
+    //let posterRoomNameUrlObj = await gtUtils.textImageURL(posterRoomName, 36, -1, "teal");
     // To pick x,y coordinates: visit
     // [ssodomain.]gather.town/old/mapmaker/[newroom]
-    let posterRoomNameObj = await gtUtils.textObject(24, 26.5, null, null, null, posterRoomNameUrlObj);
-    posters.push(posterRoomNameObj);
-    let posterRoomNameObj1 = await gtUtils.textObject(55, 26.5, null, null, null, posterRoomNameUrlObj);
-    posters.push(posterRoomNameObj1);
+    //let posterRoomNameObj = await gtUtils.textObject(24, 26.5, null, null, null, posterRoomNameUrlObj);
+    //posters.push(posterRoomNameObj);
+    //let posterRoomNameObj1 = await gtUtils.textObject(55, 26.5, null, null, null, posterRoomNameUrlObj);
+    //posters.push(posterRoomNameObj1);
 
     // Add tutorial video
-    let tutorialObj = await gtUtils.linkObject(11, 14.5, CFG.TUTORIALVID_URL, "Press x while walking here for poster room interaction tutorial", 24, "aquamarine", "white");
-    posters.push(tutorialObj);
+    //let tutorialObj = await gtUtils.linkObject(11, 14.5, CFG.TUTORIALVID_URL, "Press x while walking here for poster room interaction tutorial", 24, "aquamarine", "white");
+    //posters.push(tutorialObj);
 
     // Write map
     await axios.post("https://gather.town/api/setMap", {
