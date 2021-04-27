@@ -1,5 +1,10 @@
 {
-  "API_KEY": "p6iHZoQLOHH8c5DU",
+  "API_KEY": YOURKEYHERE,
+  "BACKGROUND" : "https://cdn.gather.town/storage.googleapis.com/gather-town.appspot.com/uploads/YVX1bgwFZi1ulwu3/pOl1L3ZWWajAckh1BS2WMm",
+  "WIDTH" : 94,
+  "HEIGHT" : 72,
+  "NUMROWS" : 5, 
+  "ROOMBASENAME" : "ml4fg_posters",
   "POSTER_INFO_FNAME": "data/postersData.json",
   "EXAMPLE_TO_RUN": 2,
   "TUTORIALVID_URL": "https://slideslive.com/38946995/poster-sessions-in-gathertown",

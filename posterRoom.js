@@ -3,8 +3,7 @@ const axios = require("axios");
 const gtUtils = require("./gtUtils.js");
 const CFG = require("./config.json");
 const MAP_ID = "custom-entrance";
-const WIDTH = 94;
-const HEIGHT = 72;
+
 const zoomZoneImg =
 	"https://cdn.gather.town/v0/b/gather-town.appspot.com/o/assets%2Fb2c9fbf1-4fc1-4b59-9ef1-e3de6b69981f?alt=media&token=cb74684a-3c6e-4260-b51c-c917e078124d";
 const zoomZoneImgActive =
@@ -18,12 +17,11 @@ const tvImg = 'https://cdn.gather.town/v0/b/gather-town.appspot.com/o/internal-d
 // Spawns
 const spawnInspo = gtUtils.readJson("jsonFiles/spawnsExample.json");
 
-
 // Local spawn to spawn into area of poster iPoster
 exports.getSpawnLink = function(iPoster, townUrl) {
   let baseUrl = CFG.URLBASE + townUrl ;
-  let spawnX = parseInt(iPoster / 4) * 13 + 7;
-  let spawnY = (iPoster % 4) * 13 + 9;
+  let spawnX = parseInt(iPoster / CFG.NUMROWS) * 13 + 7;
+  let spawnY = (iPoster % CFG.NUMROWS) * 13 + 9;
   return baseUrl + "?spawnx=" + spawnX + "&spawny=" + spawnY + "&map=" + MAP_ID;
 }
 
@@ -38,8 +36,8 @@ let posterObject = async (posterJson) => {
     // If using a lower-res preview, update posterJson and line below
     let posterImgPreview = posterJson.posterImgUrl;
     const topleft = {
-        x: parseInt(index / 5) * 13 + 3,
-        y: (index % 5) * 13 + 4,
+        x: parseInt(index / CFG.NUMROWS) * 13 + 3,
+        y: (index % CFG.NUMROWS) * 13 + 4,
     };
     let newPoster = {
         x: topleft.x,
@@ -91,9 +89,9 @@ let posterObject = async (posterJson) => {
 exports.writeMap = async (roomUrlBase, postersJson, posterRoomName, roomShortUrl) => {
     let base_map = {
         id: MAP_ID,
-        backgroundImagePath: "https://cdn.gather.town/storage.googleapis.com/gather-town.appspot.com/uploads/YVX1bgwFZi1ulwu3/pOl1L3ZWWajAckh1BS2WMm",
+        backgroundImagePath: CFG.BACKGROUND,
         // "https://cdn.gather.town/v0/b/gather-town.appspot.com/o/maps%2F8225d335-2e81-4264-a94f-5be4e31b5f63?alt=media&token=0d6c2671-1a65-4e2d-83f5-46da93acb82b",
-        dimensions: [WIDTH, HEIGHT],
+        dimensions: [CFG.WIDTH, CFG.HEIGHT],
         // generally, adding many more than one is good practice so people don't all stack up in the same place
         spawns: spawnInspo,
         objects: [], // add random plants and whatever else here
@@ -118,10 +116,10 @@ exports.writeMap = async (roomUrlBase, postersJson, posterRoomName, roomShortUrl
 
     // generate impassable bytemask
     let collBytes = [];
-    for (let r = 0; r < HEIGHT; r++) {
-        for (let c = 0; c < WIDTH; c++) {
+    for (let r = 0; r < CFG.HEIGHT; r++) {
+        for (let c = 0; c < CFG.WIDTH; c++) {
             // edges are just definitely impassable
-            if (r < 2 || r > HEIGHT - 3 || c < 1 || c > WIDTH - 2)
+            if (r < 2 || r > CFG.HEIGHT - 3 || c < 1 || c > CFG.WIDTH - 2)
                 collBytes.push(0x01);
             // otherwise see if it's marked or not
             // edit impassable map to mark more impassable tiles
